@@ -9,30 +9,27 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import Repositorio.ConexionMySQL;
-import Repositorio.Funciones;
+import Repositorio.FuncionesInicioSesion;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
-
-
-
-public class InicioSesion implements ActionListener{
-	//Las creamos fuera para poder utilizarlas en todos los metodos
+public class InicioSesion implements ActionListener {
+	// Las creamos fuera para poder utilizarlas en todos los metodos
 	JTextField userText;
 	JPasswordField passwordText;
 
-	
 	public InicioSesion() {
-			
-		//Creación de ventana de inicio de sesión
+
+		// Creación de ventana de inicio de sesión
 		JFrame frame = new JFrame("Inicio de Sesión");
 		frame.setBackground(new Color(240, 240, 240));
 		frame.getContentPane().setBackground(new Color(0, 64, 64));
-		//Tamaño del marco de la ventana
+		// Tamaño del marco de la ventana
 		frame.setSize(348, 166);
-		//.setDefaultCloseOperation--> Se utiliza para cerrar la ventana de trabajo  
+		// .setDefaultCloseOperation--> Se utiliza para cerrar la ventana de trabajo
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		//
@@ -48,6 +45,7 @@ public class InicioSesion implements ActionListener{
 		panel.setLayout(null);
 
 		JLabel Usuario = new JLabel("Usuario");
+		Usuario.setForeground(new Color(0, 0, 0));
 		Usuario.setBounds(10, 10, 80, 25);
 		panel.add(Usuario);
 
@@ -65,30 +63,60 @@ public class InicioSesion implements ActionListener{
 		passwordText.setBounds(100, 40, 160, 25);
 		panel.add(passwordText);
 
-		JButton loginButton = new JButton("login");
-		loginButton.setBounds(128, 75, 80, 25);
-		panel.add(loginButton);
-		
-		//Capturar futuros eventos sobre el boton : login
-		loginButton.addActionListener(this);
-			
-		}
-	
+		JButton botonlogin = new JButton("login");
+		botonlogin.setBounds(182, 75, 80, 25);
+		panel.add(botonlogin);
 
+		JButton botonregistro = new JButton("registrar");
+		botonregistro.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		botonregistro.setBounds(88, 75, 80, 25);
+		panel.add(botonregistro);
+
+		// .addActionListener(this)--> Capturar futuros eventos sobre el boton : login
+		botonlogin.addActionListener(this);
+
+	}
+
+	// actionPerformed --> Método que se ejecuta cuando se realiza algún evento
+	// sobre el botón
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		// 1.- Recoge el nombre de usuario y contraseña de la interfaz
 		String usuario = userText.getText();
-		String contraseña = passwordText.getText();//Pendiente		
-		// System.out.println(usuario + contraseña);
-		ConexionMySQL conexion=new ConexionMySQL("proyectofinal", "proyectofinal", "proyectofinal");
-		
-		//consulta a la base de datos
-		boolean autenticacion = Funciones.login(usuario, contraseña);
-		if(autenticacion) {
-			System.out.println("El usuario existe");
+		String contraseña = passwordText.getText();// Pendiente
+
+		System.out.println("Controlador: " + "Usuario: " + usuario + " " + "Contraseña: " + contraseña);
+
+		// 2.- Establece conexión con la base de datos
+		ConexionMySQL conexion = new ConexionMySQL("proyectofinal", "proyectofinal", "proyectofinal");
+		try {
+			conexion.conectar();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
 		}
-		else {
-			System.out.println("No existe");
+
+		// 3.-consulta a la base de datos, para comprobar el usuario y la contraseña
+
+		try {
+			boolean existeusuario = FuncionesInicioSesion.login(usuario, contraseña, conexion);
+
+			
+			if(existeusuario) 
+				{
+					System.out.println("Controlador: El usuario existe"); 
+					VentanaPrincipal vp = new VentanaPrincipal();
+				} 
+				else 
+				{
+					System.out.println("Controlador: El usuario no existe"); 
+			  		JOptionPane.showMessageDialog(null, "El usuario no existe, inténtalo de nuevo",
+  					"Fallo de autenticación", JOptionPane.ERROR_MESSAGE);}
+			} catch (SQLException e1) {
+			e1.printStackTrace();
 		}
+
 	}
 }
