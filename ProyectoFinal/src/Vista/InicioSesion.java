@@ -20,11 +20,16 @@ public class InicioSesion implements ActionListener {
 	// Las creamos fuera para poder utilizarlas en todos los metodos
 	JTextField userText;
 	JPasswordField passwordText;
+	JFrame v_iniciosesion;
+	JFrame v_ventanaprincipal;
 
+	
+	
 	public InicioSesion() {
 
 		// Creación de ventana de inicio de sesión
 		JFrame frame = new JFrame("Inicio de Sesión");
+		v_iniciosesion= frame;
 		frame.setBackground(new Color(240, 240, 240));
 		frame.getContentPane().setBackground(new Color(0, 64, 64));
 		// Tamaño del marco de la ventana
@@ -107,7 +112,10 @@ public class InicioSesion implements ActionListener {
 			if(existeusuario) 
 				{
 					System.out.println("Controlador: El usuario existe"); 
-					VentanaPrincipal vp = new VentanaPrincipal();
+					// al iniciar correctamente la sesión, debe desaparecer la ventana de inicio de sesión.
+					v_iniciosesion.setVisible(false);
+					Principal2 vp = new Principal2();
+
 				} 
 				else 
 				{
